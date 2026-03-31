@@ -11,7 +11,7 @@
 
 <br>
 
-<table>
+<table border="0">
 <tr>
 <td valign="middle">
 
