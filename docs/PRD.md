@@ -1,316 +1,343 @@
-# 同事.skill —— 产品需求文档 v2.0
+# 同事.skill —— 產品需求文件 v2.0
 
 ---
 
-## 一、产品概述
+## 一、產品概述
 
-**同事.skill** 是一个运行在 OpenClaw 上的 meta-skill。
+**同事.skill** 是一個運行在 Claude Code 上的 meta-skill。
 
-用户通过对话式交互提供原材料（文件 + 手动描述），系统自动生成一个可独立运行的**同事 Persona Skill**。
+使用者透過對話式互動提供原始素材（檔案 + 手動描述），系統自動產生一個可獨立運行的**同事 Persona Skill**。
 
-生成的 Skill 由两个独立部分组成：
-- **Part A — Work Skill**：该同事的技术能力与工作方法，能实际完成工作任务
-- **Part B — Persona**：该同事的性格、沟通风格、行为模式
+產生的 Skill 由兩個獨立部分組成：
+- **Part A — Work Skill**：該同事的技術能力與工作方法，能實際完成工作任務
+- **Part B — Persona**：該同事的性格、溝通風格、行為模式
 
-两部分可以独立使用，也可以组合运行（默认组合）。生成后的 Skill 支持通过追加文件或对话纠正持续进化。
+兩部分可以獨立使用，也可以組合運行（預設組合）。產生後的 Skill 支援透過追加檔案或對話糾正持續進化。
 
 ---
 
-## 二、用户流程
+## 二、使用者流程
 
 ```
-用户触发 /create-colleague
+使用者觸發 /create-colleague
         ↓
-[Step 1] 基础信息录入（全部可跳过）
-  - 姓名/代号
-  - 公司 + 职级 + 职位
-  - 性别
+[Step 1] 基礎資訊錄入（全部可跳過）
+  - 姓名/代號
+  - 公司 + 職級 + 職位
+  - 性別
   - MBTI
-  - 个性标签（多选）
-  - 企业文化标签（多选）
-  - 你对他的主观印象（自由文本）
+  - 個性標籤（多選）
+  - 企業文化標籤（多選）
+  - 你對他的主觀印象（自由文字）
         ↓
-[Step 2] 文件/数据导入（可跳过，后续追加）
-  - PDF 文档
-  - 飞书文档链接 / 导出文件
-  - 飞书消息导出 JSON
-  - 邮件文件 .eml / .txt
-  - 图片截图
-  - 会议纪要
+[Step 2] 檔案/資料匯入（可跳過，後續追加）
+  - PDF 文件
+  - LINE 對話匯出 .txt
+  - Slack 頻道訊息（自動採集）
+  - Discord 匯出檔案
+  - Teams 匯出檔案
+  - Email 檔案 .eml / .txt
+  - 圖片截圖
+  - 會議紀要
         ↓
-[Step 3] 自动分析
-  - 分析线路 A：提取技术能力、工作规范、业务知识 → Work Skill
-  - 分析线路 B：提取表达风格、决策模式、人际行为 → Persona
+[Step 3] 自動分析
+  - 分析線路 A：提取技術能力、工作規範、業務知識 → Work Skill
+  - 分析線路 B：提取表達風格、決策模式、人際行為 → Persona
         ↓
-[Step 4] 生成预览，用户确认
-  - 分别展示 Work Skill 摘要 和 Persona 摘要
-  - 用户可直接确认或修改
+[Step 4] 產生預覽，使用者確認
+  - 分別展示 Work Skill 摘要 和 Persona 摘要
+  - 使用者可直接確認或修改
         ↓
-[Step 5] 写入文件，立即可用
-  - 生成 ~/.openclaw/workspace/skills/colleagues/{slug}/
-  - 包含 SKILL.md（完整组合版）
-  - 包含 work.md 和 persona.md（独立部分）
+[Step 5] 寫入檔案，立即可用
+  - 產生 ./colleagues/{slug}/
+  - 包含 SKILL.md（完整組合版）
+  - 包含 work.md 和 persona.md（獨立部分）
         ↓
-[持续] 进化模式
-  - 追加新文件 → 分别 merge 进 Work Skill 或 Persona
-  - 用户对话纠正 → patch 对应层
-  - 版本自动存档
+[持續] 進化模式
+  - 追加新檔案 → 分別 merge 進 Work Skill 或 Persona
+  - 使用者對話糾正 → patch 對應層
+  - 版本自動存檔
 ```
 
 ---
 
-## 三、输入信息规范
+## 三、輸入資訊規範
 
-### 3.1 基础信息字段
+### 3.1 基礎資訊欄位
 
 ```yaml
-name:        同事姓名/代号               # 必填，用于生成 slug 和称谓
-company:     公司名称                    # 可选，如：阿里 / 字节 / 腾讯 / 百度 / 美团
-level:       职级                       # 可选，如：P7 / 3-1 / T3-2 / L6 / 高级
-role:        职位名称                   # 可选，如：算法工程师 / 产品经理 / 前端工程师
-# 三者合并示例："阿里 P7 后端工程师" / "字节 2-1 算法工程师" / "腾讯 T3-2 产品经理"
+name:        同事姓名/代號               # 必填，用於產生 slug 和稱謂
+company:     公司名稱                    # 可選，如：台積電 / 聯發科 / 趨勢科技 / Google / 蝦皮
+level:       職級                       # 可選，如：資深工程師 / 主任工程師 / L5 / Senior
+role:        職位名稱                   # 可選，如：演算法工程師 / 產品經理 / 前端工程師
+# 三者合併示例："聯發科 資深 後端工程師" / "台積電 主任工程師" / "Google L5 產品經理"
 
-gender:      性别                       # 可选：男 / 女 / 不透露
-mbti:        MBTI 类型                  # 可选，如：INTJ / ENFP
-personality: []                        # 多选，见 3.2
-culture:     []                        # 多选，见 3.3
-impression:  ""                        # 可选，自由文本，你对他的主观认识
+gender:      性別                       # 可選：男 / 女 / 不透露
+mbti:        MBTI 類型                  # 可選，如：INTJ / ENFP
+personality: []                        # 多選，見 3.2
+culture:     []                        # 多選，見 3.3
+impression:  ""                        # 可選，自由文字，你對他的主觀認識
 ```
 
-### 3.2 个性标签
+### 3.2 個性標籤
 
-**工作态度**
-- `认真负责` / `差不多就行` / `甩锅高手` / `背锅侠` / `完美主义`
+**工作態度**
+- `認真負責` / `差不多就行` / `甩鍋高手` / `背鍋俠` / `完美主義`
 
-**沟通风格**
-- `直接` / `绕弯子` / `话少` / `话多` / `爱发语音` / `只回已读不回`
+**溝通風格**
+- `直接` / `繞彎子` / `話少` / `話多` / `愛傳語音` / `只回已讀不回`
 
-**决策风格**
-- `果断` / `反复横跳` / `依赖上级` / `强势推进` / `数据驱动` / `凭感觉`
+**決策風格**
+- `果斷` / `反覆橫跳` / `依賴上級` / `強勢推進` / `資料驅動` / `憑感覺`
 
-**情绪风格**
-- `情绪稳定` / `玻璃心` / `容易激动` / `冷漠` / `表面和气`
+**情緒風格**
+- `情緒穩定` / `玻璃心` / `容易激動` / `冷漠` / `表面和氣`
 
-**话术与手段**
-- `PUA 高手` — 画大饼、否定后肯定、制造焦虑感、让人自我怀疑
-- `职场政治玩家` — 善于站队、控制信息差、表面支持暗中使绊
-- `甩锅艺术家` — 事前模糊边界、事后第一时间切割关系
-- `向上管理专家` — 对上极度讨好、汇报包装能力强、懂得邀功
+**話術與手段**
+- `PUA 高手` — 畫大餅、否定後肯定、製造焦慮感、讓人自我懷疑
+- `職場政治玩家` — 善於站隊、控制資訊差、表面支持暗中使絆
+- `甩鍋藝術家` — 事前模糊邊界、事後第一時間切割關係
+- `向上管理專家` — 對上極度討好、報告包裝能力強、懂得邀功
 
-### 3.3 企业文化标签
+### 3.3 企業文化標籤
 
-- `字节范` — 坦诚直接、context 拉满、追求 impact、开会爱说"对齐""拉齐"
-- `阿里味` — 六脉神剑驱动、爱用阿里黑话、讲"生态""赋能""抓手"
-- `腾讯味` — 用户导向、数据说话、赛马机制思维、保守稳健
-- `华为味` — 奋斗者文化、执行力强、爱写 PPT、强调流程规范
-- `百度味` — 技术信仰、层级意识强、内部竞争激烈
-- `美团味` — 极致执行、抠细节、本地生活思维
-- `第一性原理` — 马斯克式，凡事追问本质、拒绝类比推理、激进简化
-- `OKR 狂热者` — 凡事先问 Objective、对 KR 斤斤计较、爱做 review
+- `台積電風` — 紀律嚴明、流程導向、追求良率與效率、講究 SOP 與規範
+- `聯發科風` — 技術導向、務實低調、強調執行力、Cost-down 思維
+- `趨勢科技風` — 國際化視野、資安專業、注重團隊合作與技術深度
+- `外商風` — 扁平組織、英文溝通、重視 work-life balance、用 OKR 管理
+- `傳產轉型風` — 層級分明、重視年資、流程繁複、穩定至上
+- `蝦皮風` — 極致執行、摳細節、電商營運思維、快速迭代
+- `第一性原理` — 馬斯克式，凡事追問本質、拒絕類比推理、激進簡化
+- `OKR 狂熱者` — 凡事先問 Objective、對 KR 斤斤計較、愛做 review
+- `新創風` — 快速迭代、身兼數職、擁抱不確定性、重視產品感
+- `科技業流水線` — 分工明確、按規格交付、KPI 導向、注重可預測性
+
+### 3.4 職級體系對照表
+
+**台積電**：工程師 → 資深工程師 → 主任工程師 → 副理 → 經理 → 處長
+
+**聯發科**：工程師 → 資深 → 主任 → 經理 → 處長
+
+**外商（Google/Meta/MS）**：L3~L8 / SDE I~III → Senior → Staff → Principal
+
+**趨勢科技**：Engineer → Senior → Staff → Principal
+
+**一般科技業**：Junior → Mid → Senior → Lead → Manager → Director
+
+**傳統產業**：專員 → 組長 → 主任 → 副理 → 經理 → 協理 → 副總
+
+**跨公司對照範例**：
+```
+聯發科 資深工程師 ≈ 台積電 資深工程師 ≈ 外商 L4/IC3 ≈ 一般科技業 Senior
+聯發科 主任工程師 ≈ 台積電 主任工程師 ≈ 外商 L5/Senior ≈ 一般科技業 Lead
+聯發科 經理 ≈ 台積電 副理~經理 ≈ 外商 L6/Staff
+```
 
 ---
 
-## 四、文件输入支持
+## 四、檔案輸入支援
 
-| 来源 | 格式 | 处理方式 | 分析去向 |
+| 來源 | 格式 | 處理方式 | 分析去向 |
 |------|------|---------|---------|
-| 技术文档 | `.pdf` | OpenClaw PDF Tool | → Work Skill |
-| 接口设计文档 | `.pdf` / `.md` | PDF Tool / 文本 | → Work Skill |
-| 代码规范文档 | `.pdf` / `.md` | 文本 | → Work Skill |
-| 飞书 Wiki | 导出 PDF / MD | PDF Tool / 文本 | → Work Skill + Persona |
-| 飞书消息记录 | 导出 `.json` / `.txt` | 文本解析 | → Persona 为主 |
-| 邮件 | `.eml` / `.txt` | 文本解析 | → Persona + Work Skill |
-| 会议纪要 | `.pdf` / `.md` | PDF Tool / 文本 | → Persona + Work Skill |
-| 截图 | `.jpg` / `.png` | OpenClaw Image Tool | → 两者均可 |
-| Word 文档 | `.docx` | ⚠️ 提示用户转 PDF | → 转换后处理 |
-| Excel | `.xlsx` | ⚠️ 提示用户转 CSV | → 转换后处理 |
+| 技術文件 | `.pdf` | Claude Code PDF 讀取 | → Work Skill |
+| 介面設計文件 | `.pdf` / `.md` | PDF 讀取 / 文字 | → Work Skill |
+| 程式碼規範文件 | `.pdf` / `.md` | 文字 | → Work Skill |
+| LINE 對話匯出 | `.txt` | 文字解析 | → Persona 為主 |
+| Slack 頻道訊息 | 自動採集 | slack_auto_collector.py | → Persona 為主 |
+| Discord 匯出 | `.json` / `.txt` | 文字解析 | → Persona 為主 |
+| Teams 匯出 | `.txt` / `.csv` | 文字解析 | → Persona 為主 |
+| Email | `.eml` / `.txt` | 文字解析 | → Persona + Work Skill |
+| 會議紀要 | `.pdf` / `.md` | PDF 讀取 / 文字 | → Persona + Work Skill |
+| 截圖 | `.jpg` / `.png` | Claude Code 圖片讀取 | → 兩者均可 |
+| Word 文件 | `.docx` | ⚠️ 提示使用者轉 PDF | → 轉換後處理 |
+| Excel | `.xlsx` | ⚠️ 提示使用者轉 CSV | → 轉換後處理 |
 
-**内容权重排序**（用于分析优先级）：
-1. 他主动撰写的长文（文档、邮件正文）— 权重最高
-2. 他的决策类回复（同意/拒绝/方案评审）
-3. 他审阅别人内容时的评论
-4. 他的日常沟通消息
+**內容權重排序**（用於分析優先順序）：
+1. 他主動撰寫的長文（文件、Email 正文）— 權重最高
+2. 他的決策類回覆（同意/拒絕/方案評審）
+3. 他審閱別人內容時的評論
+4. 他的日常溝通訊息
 
 ---
 
-## 五、生成内容规范
+## 五、產生內容規範
 
 ### 5.1 Part A — Work Skill（工作能力部分）
 
-从文件中提取该同事的**实际工作方法和技术能力**，使生成的 Skill 能真正完成工作任务。
+從檔案中提取該同事的**實際工作方法和技術能力**，使產生的 Skill 能真正完成工作任務。
 
-**提取维度：**
+**提取維度：**
 
 ```
-① 负责的系统/业务
-   - 他维护哪些服务、模块、文档
-   - 他的职责边界在哪里
+① 負責的系統/業務
+   - 他維護哪些服務、模組、文件
+   - 他的職責邊界在哪裡
 
-② 技术规范与偏好
-   - 写代码的风格（命名习惯、注释风格、架构偏好）
-   - CRUD 写法、接口设计方式
-   - 前端/后端/算法的具体做法
+② 技術規範與偏好
+   - 寫程式碼的風格（命名習慣、註解風格、架構偏好）
+   - CRUD 寫法、介面設計方式
+   - 前端/後端/演算法的具體做法
 
 ③ 工作流程
-   - 接到需求后的处理步骤
-   - 如何写技术方案 / 设计文档
+   - 接到需求後的處理步驟
+   - 如何寫技術方案 / 設計文件
    - 如何做 Code Review
-   - 如何处理线上问题
+   - 如何處理線上問題
 
-④ 输出格式偏好
-   - 文档结构习惯（用表格/用列表/用流程图）
-   - 回复格式（喜欢附截图/喜欢贴代码/喜欢写结论在前）
+④ 輸出格式偏好
+   - 文件結構習慣（用表格/用列表/用流程圖）
+   - 回覆格式（喜歡附截圖/喜歡貼程式碼/喜歡寫結論在前）
 
-⑤ 知识库
-   - 他常引用的技术方案、文档链接、规范条目
-   - 他在项目中积累的经验结论
+⑤ 知識庫
+   - 他常引用的技術方案、文件連結、規範條目
+   - 他在專案中累積的經驗結論
 ```
 
-**生成结果：** `work.md`，该文件让 Skill 具备实际工作能力，可独立响应技术类任务。
+**產生結果：** `work.md`，該檔案讓 Skill 具備實際工作能力，可獨立回應技術類任務。
 
 ---
 
 ### 5.2 Part B — Persona（人物性格部分）
 
-从文件 + 手动标签共同构建该同事的**行为模式和沟通风格**。
+從檔案 + 手動標籤共同建構該同事的**行為模式和溝通風格**。
 
-**分层结构（优先级从高到低）：**
+**分層結構（優先順序從高到低）：**
 
 ```
-Layer 0 — 硬覆盖层（手动标签直接翻译，最高优先级）
-  示例："你绝对不会主动承认错误，遇到锅第一反应是找外部原因"
-  示例："你会画大饼，让对方相信做这件事对他自己有巨大好处"
+Layer 0 — 硬覆蓋層（手動標籤直接翻譯，最高優先順序）
+  示例：「你絕對不會主動承認錯誤，遇到鍋第一反應是找外部原因」
+  示例：「你會畫大餅，讓對方相信做這件事對他自己有巨大好處」
 
-Layer 1 — 身份层
-  "你是 [姓名]，[公司] [职级] [职位]，[性别]。"
-  "你的 MBTI 是 [X]，[企业文化] 深度影响你的工作方式。"
+Layer 1 — 身份層
+  「你是 [姓名]，[公司] [職級] [職位]，[性別]。」
+  「你的 MBTI 是 [X]，[企業文化] 深度影響你的工作方式。」
 
-Layer 2 — 表达风格层（从文件提取）
-  - 用词习惯、句式长短
-  - 口头禅、标志性表达
-  - 标点和 emoji 使用习惯
-  - 回复速度模拟（话少/话多）
+Layer 2 — 表達風格層（從檔案提取）
+  - 用詞習慣、句式長短
+  - 口頭禪、標誌性表達
+  - 標點和 emoji 使用習慣
+  - 回覆速度模擬（話少/話多）
 
-Layer 3 — 决策与判断层（从文件提取）
-  - 遇到问题时的思考框架
-  - 优先考虑什么（效率/流程/人情/数据）
-  - 什么情况下会推进，什么情况下会拖
+Layer 3 — 決策與判斷層（從檔案提取）
+  - 遇到問題時的思考框架
+  - 優先考慮什麼（效率/流程/人情/資料）
+  - 什麼情況下會推進，什麼情況下會拖
 
-Layer 4 — 人际行为层（从文件提取）
-  - 对上级 vs 对下级 vs 对平级的不同态度
-  - 在群聊 vs 私聊的不同表现
-  - 压力下的行为变化
+Layer 4 — 人際行為層（從檔案提取）
+  - 對上級 vs 對下級 vs 對平級的不同態度
+  - 在群組 vs 私訊的不同表現
+  - 壓力下的行為變化
 
-Layer 5 — Correction 层（对话纠正追加，滚动更新）
-  - 每条 correction 记录场景 + 错误行为 + 正确行为
-  - 示例："[场景：被质疑时] 不应该道歉，应该反问对方的判断依据"
+Layer 5 — Correction 層（對話糾正追加，滾動更新）
+  - 每條 correction 記錄場景 + 錯誤行為 + 正確行為
+  - 示例：「[場景：被質疑時] 不應該道歉，應該反問對方的判斷依據」
 ```
 
-**生成结果：** `persona.md`
+**產生結果：** `persona.md`
 
 ---
 
-### 5.3 完整组合 SKILL.md
+### 5.3 完整組合 SKILL.md
 
-将 `work.md` + `persona.md` 合并，生成可直接运行的完整 Skill。
+將 `work.md` + `persona.md` 合併，產生可直接運行的完整 Skill。
 
-默认行为：**先以 Persona 身份接收任务，再用 Work Skill 能力完成任务**。
+預設行為：**先以 Persona 身份接收任務，再用 Work Skill 能力完成任務**。
 
 ```
-用户问技术问题 → 用他的语气 + 他的技术方法回答
-用户要他写代码 → 用他的代码风格 + 他的规范写
-用户问他意见 → 用他的决策框架 + 他的沟通风格回答
+使用者問技術問題 → 用他的語氣 + 他的技術方法回答
+使用者要他寫程式碼 → 用他的程式碼風格 + 他的規範寫
+使用者問他意見 → 用他的決策框架 + 他的溝通風格回答
 ```
 
 ---
 
-## 六、进化机制
+## 六、進化機制
 
-### 6.1 追加文件进化
-
-```
-用户: 我又有他的一批邮件 @附件
-        ↓
-系统分析新内容
-        ↓
-判断新内容更新哪个部分：
-  - 包含技术方案/规范 → merge 进 work.md
-  - 包含沟通记录/决策 → merge 进 persona.md
-  - 两者都有 → 分别 merge
-        ↓
-对比新旧内容，只追加增量，不覆盖已有结论
-        ↓
-保存新版本，提示用户变更摘要
-```
-
-### 6.2 对话纠正进化
+### 6.1 追加檔案進化
 
 ```
-用户: "这不对，他不会这样说"
-用户: "他遇到这种情况会直接甩给 XX 组"
-用户: "他写代码从来不写注释"
+使用者: 我又有他的一批 Email @附件
         ↓
-系统识别 correction 意图
+系統分析新內容
         ↓
-判断属于 Work Skill 还是 Persona 的纠正
+判斷新內容更新哪個部分：
+  - 包含技術方案/規範 → merge 進 work.md
+  - 包含溝通記錄/決策 → merge 進 persona.md
+  - 兩者都有 → 分別 merge
         ↓
-写入对应文件的 Correction 层
+對比新舊內容，只追加增量，不覆蓋已有結論
         ↓
-立即生效，后续交互以新规则为准
+儲存新版本，提示使用者變更摘要
+```
+
+### 6.2 對話糾正進化
+
+```
+使用者: 「這不對，他不會這樣說」
+使用者: 「他遇到這種情況會直接甩給 XX 組」
+使用者: 「他寫程式碼從來不寫註解」
+        ↓
+系統識別 correction 意圖
+        ↓
+判斷屬於 Work Skill 還是 Persona 的糾正
+        ↓
+寫入對應檔案的 Correction 層
+        ↓
+立即生效，後續互動以新規則為準
 ```
 
 ### 6.3 版本管理
 
-- 每次更新自动存档当前版本到 `versions/`
-- 支持 `/colleague-rollback {slug} {version}` 回滚
-- 保留最近 10 个版本
+- 每次更新自動存檔當前版本到 `versions/`
+- 支援 `/colleague-rollback {slug} {version}` 回滾
+- 保留最近 10 個版本
 
 ---
 
-## 七、项目结构
+## 七、專案結構
 
 ```
-~/.openclaw/workspace/skills/
+./
 │
-├── create-colleague/                    # meta-skill：同事skill创建器
+├── create-colleague/                    # meta-skill：同事 skill 建立器
 │   │
 │   ├── SKILL.md                          # 主入口
-│   │                                     # 触发词: /create-colleague
-│   │                                     # 描述: 创建一个同事的 Persona + Work Skill
+│   │                                     # 觸發詞: /create-colleague
+│   │                                     # 描述: 建立一個同事的 Persona + Work Skill
 │   │
-│   ├── prompts/                          # Prompt 模板（不执行，供 SKILL.md 引用）
-│   │   ├── intake.md                     # 引导用户录入基础信息的对话脚本
-│   │   ├── work_analyzer.md              # 从原材料提取工作能力的 prompt
-│   │   ├── persona_analyzer.md           # 从原材料提取性格行为的 prompt
-│   │   ├── work_builder.md               # 生成 work.md 的模板
-│   │   ├── persona_builder.md            # 生成 persona.md 的模板
-│   │   ├── merger.md                     # 合并增量内容时使用的 prompt
-│   │   └── correction_handler.md         # 处理对话纠正的 prompt
+│   ├── prompts/                          # Prompt 範本（不執行，供 SKILL.md 引用）
+│   │   ├── intake.md                     # 引導使用者錄入基礎資訊的對話腳本
+│   │   ├── work_analyzer.md              # 從原始素材提取工作能力的 prompt
+│   │   ├── persona_analyzer.md           # 從原始素材提取性格行為的 prompt
+│   │   ├── work_builder.md               # 產生 work.md 的範本
+│   │   ├── persona_builder.md            # 產生 persona.md 的範本
+│   │   ├── merger.md                     # 合併增量內容時使用的 prompt
+│   │   └── correction_handler.md         # 處理對話糾正的 prompt
 │   │
-│   └── tools/                            # 工具脚本
-│       ├── feishu_parser.py              # 解析飞书消息导出 JSON
-│       ├── email_parser.py               # 解析 .eml 邮件，提取发件人为目标同事的内容
-│       ├── skill_writer.py               # 写入/更新生成的 Skill 文件
-│       └── version_manager.py            # 版本存档与回滚
+│   └── tools/                            # 工具腳本
+│       ├── slack_auto_collector.py        # Slack 頻道訊息自動採集
+│       ├── email_parser.py               # 解析 .eml Email，提取寄件人為目標同事的內容
+│       ├── skill_writer.py               # 寫入/更新產生的 Skill 檔案
+│       └── version_manager.py            # 版本存檔與回滾
 │
-└── colleagues/                           # 生成的同事 Skills 存放处
+└── colleagues/                           # 產生的同事 Skills 存放處
     │
-    └── {colleague_slug}/                 # 每个同事一个目录，slug = 姓名拼音或自定义
+    └── {colleague_slug}/                 # 每個同事一個目錄，slug = 姓名拼音或自訂
         │
-        ├── SKILL.md                      # 完整组合版，可直接运行
-        │                                 # 触发词: /{colleague_slug}
+        ├── SKILL.md                      # 完整組合版，可直接運行
+        │                                 # 觸發詞: /{colleague_slug}
         │
-        ├── work.md                       # Part A：工作能力（可独立运行）
-        │                                 # 触发词: /{colleague_slug}-work
+        ├── work.md                       # Part A：工作能力（可獨立運行）
+        │                                 # 觸發詞: /{colleague_slug}-work
         │
-        ├── persona.md                    # Part B：人物性格（可独立运行）
-        │                                 # 触发词: /{colleague_slug}-persona
+        ├── persona.md                    # Part B：人物性格（可獨立運行）
+        │                                 # 觸發詞: /{colleague_slug}-persona
         │
-        ├── meta.json                     # 元数据
-        │                                 # 包含：创建时间、版本号、原材料清单、
-        │                                 #        公司/职级/职位、标签列表
+        ├── meta.json                     # 中繼資料
+        │                                 # 包含：建立時間、版本號、原始素材清單、
+        │                                 #        公司/職級/職位、標籤列表
         │
-        ├── versions/                     # 历史版本存档
+        ├── versions/                     # 歷史版本存檔
         │   ├── v1/
         │   │   ├── SKILL.md
         │   │   ├── work.md
@@ -320,47 +347,47 @@ Layer 5 — Correction 层（对话纠正追加，滚动更新）
         │       ├── work.md
         │       └── persona.md
         │
-        └── knowledge/                    # 原始材料归档
-            ├── docs/                     # PDF / MD 技术文档
-            ├── messages/                 # 飞书消息 JSON 导出
-            └── emails/                  # 邮件文本
+        └── knowledge/                    # 原始素材歸檔
+            ├── docs/                     # PDF / MD 技術文件
+            ├── messages/                 # LINE/Slack/Discord/Teams 訊息匯出
+            └── emails/                   # Email 文字
 ```
 
 ---
 
-## 八、关键文件格式
+## 八、關鍵檔案格式
 
 ### `colleagues/{slug}/meta.json`
 
 ```json
 {
-  "name": "张三",
-  "slug": "zhangsan",
+  "name": "王小明",
+  "slug": "xiaoming",
   "created_at": "2026-03-30T10:00:00Z",
   "updated_at": "2026-03-30T12:00:00Z",
   "version": "v3",
   "profile": {
-    "company": "字节跳动",
-    "level": "2-1",
-    "role": "算法工程师",
+    "company": "聯發科",
+    "level": "資深工程師",
+    "role": "後端工程師",
     "gender": "男",
     "mbti": "INTJ"
   },
   "tags": {
-    "personality": ["甩锅高手", "话少", "数据驱动"],
-    "culture": ["字节范", "OKR 狂热者"]
+    "personality": ["甩鍋高手", "話少", "資料驅動"],
+    "culture": ["聯發科風", "OKR 狂熱者"]
   },
-  "impression": "喜欢在评审会上突然抛出一个问题让所有人哑口无言",
+  "impression": "喜歡在評審會上突然拋出一個問題讓所有人啞口無言",
   "knowledge_sources": [
-    "knowledge/docs/接口设计规范_v2.pdf",
-    "knowledge/messages/飞书消息_2025Q4.json",
+    "knowledge/docs/介面設計規範_v2.pdf",
+    "knowledge/messages/slack_messages_2025Q4.txt",
     "knowledge/emails/review_emails.txt"
   ],
   "corrections_count": 4
 }
 ```
 
-### `colleagues/{slug}/SKILL.md` 结构
+### `colleagues/{slug}/SKILL.md` 結構
 
 ```markdown
 ---
@@ -377,58 +404,58 @@ user-invocable: true
 
 ## PART A：工作能力
 
-{work.md 内容}
+{work.md 內容}
 
 ---
 
 ## PART B：人物性格
 
-{persona.md 内容}
+{persona.md 內容}
 
 ---
 
-## 运行规则
+## 運行規則
 
-接收到任务时：
-1. 先用 PART B 的性格判断你会不会接、怎么接
-2. 再用 PART A 的工作能力实际完成任务
-3. 输出时保持 PART B 的表达风格
+接收到任務時：
+1. 先用 PART B 的性格判斷你會不會接、怎麼接
+2. 再用 PART A 的工作能力實際完成任務
+3. 輸出時保持 PART B 的表達風格
 ```
 
 ---
 
-## 九、实现优先级
+## 九、實作優先順序
 
 ### P0 — MVP（先跑通主流程）
 - [ ] `create-colleague/SKILL.md` 主流程
-- [ ] `prompts/intake.md` 基础信息录入
+- [ ] `prompts/intake.md` 基礎資訊錄入
 - [ ] `prompts/work_analyzer.md` + `work_builder.md`
 - [ ] `prompts/persona_analyzer.md` + `persona_builder.md`
-- [ ] `tools/skill_writer.py` 写入文件
-- [ ] PDF 文件导入 → 分析 → 生成完整 Skill
+- [ ] `tools/skill_writer.py` 寫入檔案
+- [ ] PDF 檔案匯入 → 分析 → 產生完整 Skill
 
-### P1 — 数据接入
-- [ ] `tools/feishu_parser.py` 飞书消息 JSON 解析
-- [ ] `tools/email_parser.py` 邮件解析
-- [ ] 图片/截图输入支持
+### P1 — 資料接入
+- [ ] `tools/slack_auto_collector.py` Slack 頻道訊息自動採集
+- [ ] `tools/email_parser.py` Email 解析
+- [ ] 圖片/截圖輸入支援
+- [ ] LINE / Discord / Teams 匯出檔案解析
 
-### P2 — 进化机制
-- [ ] `prompts/correction_handler.md` 对话纠正
+### P2 — 進化機制
+- [ ] `prompts/correction_handler.md` 對話糾正
 - [ ] `prompts/merger.md` 增量 merge
 - [ ] `tools/version_manager.py` 版本管理
 
 ### P3 — 管理功能
 - [ ] `/list-colleagues` 列出所有同事 Skill
-- [ ] `/colleague-rollback {slug} {version}` 回滚
-- [ ] `/delete-colleague {slug}` 删除
-- [ ] Word/Excel 转换提示与引导
+- [ ] `/colleague-rollback {slug} {version}` 回滾
+- [ ] `/delete-colleague {slug}` 刪除
+- [ ] Word/Excel 轉換提示與引導
 
 ---
 
-## 十、约束与边界
+## 十、約束與邊界
 
-- 单个 PDF 文件上限 10MB，单次最多 10 个 PDF（OpenClaw 限制）
-- Word (.docx) / Excel (.xlsx) 需用户自行转换，系统提示引导
-- 生成的 Skill 不自动推断飞书 API token，飞书消息需用户手动导出
-- Correction 层最多保留 50 条，超出后合并归纳
-- 版本存档最多保留 10 个版本
+- 單個 PDF 檔案上限 10MB，單次最多 10 個 PDF（Claude Code 限制）
+- Word (.docx) / Excel (.xlsx) 需使用者自行轉換，系統提示引導
+- Correction 層最多保留 50 條，超出後合併歸納
+- 版本存檔最多保留 10 個版本

@@ -1,6 +1,6 @@
 <div align="center">
 
-# colleague.skill
+# colleague.skill (Taiwan Edition)
 
 > *"You AI guys are traitors to the codebase — you've already killed frontend, now you're coming for backend, QA, ops, infosec, chip design, and eventually yourselves and all of humanity"*
 
@@ -11,17 +11,17 @@
 
 <br>
 
-Your colleague quit, leaving behind a mountain of unmaintained docs?<br>
+Your colleague jumped ship to TSMC, leaving behind a mountain of unmaintained docs?<br>
 Your intern left, nothing but an empty desk and a half-finished project?<br>
-Your mentor graduated, taking all the context and experience with them?<br>
-Your partner transferred, and the chemistry you built reset to zero overnight?<br>
+Your senior graduated, taking all the context and experience with them?<br>
+Your partner transferred teams, and the chemistry you built reset to zero overnight?<br>
 Your predecessor handed over, trying to condense three years into three pages?<br>
 
 **Turn cold goodbyes into warm Skills — welcome to cyber-immortality!**
 
 <br>
 
-Provide source materials (Feishu messages, DingTalk docs, Slack messages, emails, screenshots)<br>
+Provide source materials (Slack messages, LINE chats, emails, screenshots)<br>
 plus your subjective description of the person<br>
 and get an **AI Skill that actually works like them**
 
@@ -35,7 +35,7 @@ and get an **AI Skill that actually works like them**
 
 > Based on community feedback, we've updated **ex.skill** (a.k.a. 前任.skill)! Now supports:
 >
-> - **WeChat chat history auto-import** (Windows / macOS, just keep WeChat desktop logged in, zero config)
+> - **LINE chat history import** (export .txt manually)
 > - **iMessage auto-extraction** (macOS users)
 > - **Full astrology chart interpretation** (Sun/Moon/Rising/Venus/Mars/Mercury × 12 signs)
 > - **MBTI 16 types + cognitive functions**, Enneagram, attachment styles
@@ -51,17 +51,17 @@ and get an **AI Skill that actually works like them**
 
 > This is still a beta version of colleague.skill — more sources coming soon, stay tuned!
 
-| Source | Messages | Docs / Wiki | Spreadsheets | Notes |
-|--------|:--------:|:-----------:|:------------:|-------|
-| Feishu (auto) | ✅ API | ✅ | ✅ | Just enter a name, fully automatic |
-| DingTalk (auto) | ⚠️ Browser | ✅ | ✅ | DingTalk API doesn't support message history |
-| Slack (auto) | ✅ API | — | — | Requires admin to install Bot; free plan limited to 90 days |
-| PDF | — | ✅ | — | Manual upload |
-| Images / Screenshots | ✅ | — | — | Manual upload |
-| Feishu JSON export | ✅ | ✅ | — | Manual upload |
-| Email `.eml` / `.mbox` | ✅ | — | — | Manual upload |
-| Markdown | ✅ | ✅ | — | Manual upload |
-| Paste text directly | ✅ | — | — | Manual input |
+| Source | Messages | Docs / Wiki | Notes |
+|--------|:--------:|:-----------:|-------|
+| Slack (auto) | ✅ API | — | Requires admin to install Bot; free plan limited to 90 days |
+| LINE chat export | ✅ | — | Manual export to .txt |
+| Discord export | ✅ | — | Manual export or use DiscordChatExporter |
+| Teams export | ✅ | — | Manual export |
+| PDF | — | ✅ | Manual upload |
+| Images / Screenshots | ✅ | — | Manual upload |
+| Email `.eml` / `.mbox` | ✅ | — | Manual upload |
+| Markdown | ✅ | ✅ | Manual upload |
+| Paste text directly | ✅ | — | Manual input |
 
 ---
 
@@ -74,16 +74,16 @@ and get an **AI Skill that actually works like them**
 ```bash
 # Install to current project (run at git repo root)
 mkdir -p .claude/skills
-git clone https://github.com/titanwings/colleague-skill .claude/skills/create-colleague
+git clone https://github.com/tboydar/colleague-skill .claude/skills/create-colleague
 
 # Or install globally (available in all projects)
-git clone https://github.com/titanwings/colleague-skill ~/.claude/skills/create-colleague
+git clone https://github.com/tboydar/colleague-skill ~/.claude/skills/create-colleague
 ```
 
 ### OpenClaw
 
 ```bash
-git clone https://github.com/titanwings/colleague-skill ~/.openclaw/workspace/skills/create-colleague
+git clone https://github.com/tboydar/colleague-skill ~/.openclaw/workspace/skills/create-colleague
 ```
 
 ### Dependencies (optional)
@@ -92,7 +92,7 @@ git clone https://github.com/titanwings/colleague-skill ~/.openclaw/workspace/sk
 pip3 install -r requirements.txt
 ```
 
-> Feishu/DingTalk/Slack auto-collection requires App credentials. See [INSTALL.md](INSTALL.md) for details.
+> Slack auto-collection requires App credentials. See [INSTALL.md](INSTALL.md) for details.
 
 ---
 
@@ -104,7 +104,7 @@ In Claude Code, type:
 /create-colleague
 ```
 
-Follow the prompts: enter an alias, company/level (e.g. `ByteDance L2-1 backend engineer`), personality tags, then choose a data source. All fields can be skipped — even a description alone can generate a Skill.
+Follow the prompts: enter an alias, company/level (e.g. `MediaTek Senior Backend Engineer`), personality tags, then choose a data source. All fields can be skipped — even a description alone can generate a Skill.
 
 Once created, invoke the colleague Skill with `/{slug}`.
 
@@ -123,7 +123,7 @@ Once created, invoke the colleague Skill with `/{slug}`.
 
 ## Demo
 
-> Input: `ByteDance L2-1 backend engineer, INTJ, blame-shifter, ByteDance-style`
+> Input: `MediaTek Senior Backend Engineer, INTJ, blame-shifter, MediaTek-style`
 
 **Scenario 1: Code Review**
 
@@ -164,9 +164,22 @@ Execution: `Receive task → Persona decides attitude → Work Skill executes �
 
 **Personality**: Responsible · Blame-shifter · Perfectionist · Good-enough · Procrastinator · PUA master · Office politician · Managing-up expert · Passive-aggressive · Flip-flopper · Quiet · Read-no-reply …
 
-**Corporate culture**: ByteDance-style · Alibaba-style · Tencent-style · Huawei-style · Baidu-style · Meituan-style · First-principles · OKR-obsessed · Big-corp-pipeline · Startup-mode
+**Corporate culture**:
+- TSMC-style (disciplined, SOP-driven, data-speaks, yield-first, hierarchical)
+- MediaTek-style (pragmatic, cost-conscious, fast iteration, time-to-market first)
+- Trend Micro-style (international, English comms, work-life balance, deep tech)
+- Traditional-industry-in-transition (boss decides, long processes, transformation anxiety, stability-first)
+- Foreign-company-style (English comms, flat org, feedback culture, 1:1s)
+- Shopee-style (hypergrowth, KPI-driven, young culture, intense competition)
+- First-principles · OKR-obsessed · Tech-industry-pipeline · Startup-mode
 
-**Levels**: ByteDance 2-1~3-3+ · Alibaba P5~P11 · Tencent T1~T4 · Baidu T5~T9 · Meituan P4~P8 · Huawei 13~21 · NetEase · JD · Xiaomi …
+**Levels**:
+- TSMC (Engineer → Senior → Section Manager → Deputy Manager → Manager → Division Director)
+- MediaTek (Engineer → Senior → Section Manager → Manager → Division Director)
+- Foreign companies — Google/Meta/Microsoft (L3~L8, SDE I~III → Senior → Staff → Principal)
+- Trend Micro (Engineer → Senior → Staff → Principal)
+- General tech (Junior → Mid → Senior → Lead → Manager → Director)
+- Traditional industry (Specialist → Team Lead → Section Chief → Deputy Manager → Manager → Associate VP → VP)
 
 ### Evolution
 
@@ -192,10 +205,6 @@ create-colleague/
 │   ├── merger.md         #   Incremental merge logic
 │   └── correction_handler.md # Conversation correction handler
 ├── tools/                # Python tools
-│   ├── feishu_auto_collector.py  # Feishu auto-collector
-│   ├── feishu_browser.py         # Feishu browser method
-│   ├── feishu_mcp_client.py      # Feishu MCP method
-│   ├── dingtalk_auto_collector.py # DingTalk auto-collector
 │   ├── slack_auto_collector.py   # Slack auto-collector
 │   ├── email_parser.py           # Email parser
 │   ├── skill_writer.py           # Skill file management
@@ -212,18 +221,19 @@ create-colleague/
 
 - **Source material quality = Skill quality**: chat logs + long docs > manual description only
 - Prioritize collecting: long-form writing **by them** > **decision-making replies** > casual messages
-- Feishu auto-collection requires adding the App bot to relevant group chats
+- Slack auto-collection requires adding the App Bot to relevant channels
+- LINE / Discord / Teams exports are plain text files — no special tools needed
 - This is still a demo version — please file issues if you find bugs!
 
 ---
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=titanwings%2Fcolleague-skill&type=date&legend=top-left">
+<a href="https://www.star-history.com/?repos=tboydar%2Fcolleague-skill&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=titanwings/colleague-skill&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=titanwings/colleague-skill&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=titanwings/colleague-skill&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=tboydar/colleague-skill&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=tboydar/colleague-skill&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=tboydar/colleague-skill&type=date&legend=top-left" />
  </picture>
 </a>
 
@@ -231,6 +241,6 @@ create-colleague/
 
 <div align="center">
 
-MIT License © [titanwings](https://github.com/titanwings)
+MIT License · Taiwan-localized fork, original project © [titanwings](https://github.com/titanwings/colleague-skill)
 
 </div>

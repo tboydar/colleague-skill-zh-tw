@@ -1,6 +1,6 @@
 # Generated colleague skills (user data, not committed)
 colleagues/
-!colleagues/example_zhangsan/
+!colleagues/example_ahua/
 
 # Python
 __pycache__/
@@ -13,14 +13,12 @@ venv/
 # Config with credentials
 ~/.colleague-skill/
 
-# Playwright browser data
-playwright-data/
-
 # Temp files
-/tmp/feishu_*.txt
 /tmp/email_*.txt
-/tmp/dingtalk_*.txt
 knowledge/
+
+# OMC agent state
+.omc/
 
 # OS
 .DS_Store

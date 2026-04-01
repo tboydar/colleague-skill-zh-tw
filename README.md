@@ -2,7 +2,7 @@
 
 # 同事.skill
 
-> *"你们搞大模型的就是码奸，你们已经害死前端兄弟了，还要害死后端兄弟，测试兄弟，运维兄弟，害死网安兄弟，害死ic兄弟，最后害死自己害死全人类"*
+> *「你們搞大模型的就是碼奸——前端的飯碗已經砸了，接下來要砸後端、測試、維運、資安、IC，最後連自己都砸掉，害死全人類。」*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://python.org)
@@ -11,193 +11,195 @@
 
 <br>
 
-你的同事跳槽了，留下大量的文档没人维护？<br>
-你的实习生离职了，只留下空荡的工位和烂尾的项目？<br>
-你的导师毕业了，带走了所有的经验和上下文？<br>
-你的搭档转岗了，熟悉的默契一夜之间归零？<br>
-你的前任交接了，三页文档想概括三年的积累？<br>
+你的同事跳槽去台積電了，留下一堆沒人維護的文件？<br>
+你的實習生離職了，只剩空蕩蕩的座位和爛尾的專案？<br>
+你的學長畢業了，帶走了所有經驗和上下文？<br>
+你的搭檔轉組了，默契一夕之間歸零？<br>
+你的前任交接了，三頁文件想概括三年的累積？<br>
 
-**将冰冷的离别化为温暖的 Skill，欢迎加入赛博永生！**
+**把冰冷的離別化為溫暖的 Skill，歡迎加入賽博永生！**
 
 <br>
 
-提供同事的原材料（飞书消息、钉钉文档、邮件、截图）加上你的主观描述<br>
-生成一个**真正能替他工作的 AI Skill**<br>
-用他的技术规范写代码，用他的语气回答问题，知道他什么时候会甩锅
+提供同事的原始素材（Slack 訊息、LINE 對話、Email、截圖）加上你的主觀描述<br>
+生成一個**真正能替他工作的 AI Skill**<br>
+用他的技術規範寫程式碼，用他的語氣回答問題，知道他什麼時候會甩鍋
 
-[数据来源](#支持的数据来源) · [安装](#安装) · [使用](#使用) · [效果示例](#效果示例) · [详细安装说明](INSTALL.md) · [**English**](README_EN.md)
+[資料來源](#支持的資料來源) · [安裝](#安裝) · [使用](#使用) · [效果示例](#效果示例) · [詳細安裝說明](INSTALL.md) · [**English**](README_EN.md)
 
 </div>
 
 ---
 
-### 🌟 同系列项目：[前任.skill](https://github.com/titanwings/ex-skill)
+### 🌟 同系列專案：[前任.skill](https://github.com/titanwings/ex-skill)
 
-> 根据大家的 issue 反馈，更新了一版 **前任.skill**！现已支持：
+> 根據大家的 issue 回饋，更新了一版 **前任.skill**！現已支援：
 >
-> - **微信聊天记录全自动导入**（Windows / macOS，桌面端登录即可，无需任何配置）
-> - **iMessage 全自动提取**（macOS 用户）
-> - **完整星盘解读**（太阳/月亮/上升/金星/火星/水星 × 12 星座）
-> - **MBTI 16 型 + 认知功能**、九型人格、依恋风格全支持
-> - 支持所有性别认同与关系类型
+> - **LINE 聊天記錄自動匯入**（手動匯出 .txt 即可）
+> - **iMessage 全自動提取**（macOS 使用者）
+> - **完整星盤解讀**（太陽/月亮/上升/金星/火星/水星 × 12 星座）
+> - **MBTI 16 型 + 認知功能**、九型人格、依附風格全支援
+> - 支援所有性別認同與關係類型
 >
-> 同事跑了用 **同事.skill**，前任跑了用 **[前任.skill](https://github.com/titanwings/ex-skill)**，赛博永生一条龙 🌟🌟🌟
+> 同事跑了用 **同事.skill**，前任跑了用 **[前任.skill](https://github.com/titanwings/ex-skill)**，賽博永生一條龍 🌟🌟🌟
 >
-> 觉得有意思的话，给两个项目都点个 Star 吧！
+> 覺得有趣的話，幫兩個專案都點個 Star 吧！
 
 ---
 
-## 支持的数据来源
+## 支持的資料來源
 
-> 目前还是同事.skill 的 beta 测试版本，后续会有更多来源支持，请多多关注！
+> 目前還是同事.skill 的 beta 測試版本，後續會有更多來源支援，請多多關注！
 
-| 来源 | 消息记录 | 文档 / Wiki | 多维表格 | 备注 |
-|------|:-------:|:-----------:|:-------:|------|
-| 飞书（自动采集） | ✅ API | ✅ | ✅ | 输入姓名即可，全自动 |
-| 钉钉（自动采集） | ⚠️ 浏览器 | ✅ | ✅ | 钉钉 API 不支持历史消息 |
-| Slack（自动采集） | ✅ API | — | — | 需管理员安装 Bot；免费版限 90 天 |
-| PDF | — | ✅ | — | 手动上传 |
-| 图片 / 截图 | ✅ | — | — | 手动上传 |
-| 飞书 JSON 导出 | ✅ | ✅ | — | 手动上传 |
-| 邮件 `.eml` / `.mbox` | ✅ | — | — | 手动上传 |
-| Markdown | ✅ | ✅ | — | 手动上传 |
-| 直接粘贴文字 | ✅ | — | — | 手动输入 |
+| 來源 | 訊息記錄 | 文件 / Wiki | 備註 |
+|------|:-------:|:-----------:|------|
+| Slack（自動採集）| ✅ API | — | 需管理員安裝 Bot；免費版限 90 天 |
+| LINE 對話匯出 | ✅ | — | 手動匯出 .txt |
+| Discord 匯出 | ✅ | — | 手動匯出或使用 DiscordChatExporter |
+| Teams 匯出 | ✅ | — | 手動匯出 |
+| PDF | — | ✅ | 手動上傳 |
+| 圖片 / 截圖 | ✅ | — | 手動上傳 |
+| Email `.eml` / `.mbox` | ✅ | — | 手動上傳 |
+| Markdown | ✅ | ✅ | 手動上傳 |
+| 直接貼上文字 | ✅ | — | 手動輸入 |
 
 ---
 
-## 安装
+## 安裝
 
 ### Claude Code
 
-> **重要**：Claude Code 从 **git 仓库根目录** 的 `.claude/skills/` 查找 skill。请在正确的位置执行。
+> **重要**：Claude Code 從 **git 倉庫根目錄** 的 `.claude/skills/` 尋找 skill。請在正確的位置執行。
 
 ```bash
-# 安装到当前项目（在 git 仓库根目录执行）
+# 安裝到目前專案（在 git 倉庫根目錄執行）
 mkdir -p .claude/skills
-git clone https://github.com/titanwings/colleague-skill .claude/skills/create-colleague
+git clone https://github.com/tboydar/colleague-skill .claude/skills/create-colleague
 
-# 或安装到全局（所有项目都能用）
-git clone https://github.com/titanwings/colleague-skill ~/.claude/skills/create-colleague
+# 或安裝到全域（所有專案都能用）
+git clone https://github.com/tboydar/colleague-skill ~/.claude/skills/create-colleague
 ```
 
 ### OpenClaw
 
 ```bash
-git clone https://github.com/titanwings/colleague-skill ~/.openclaw/workspace/skills/create-colleague
+git clone https://github.com/tboydar/colleague-skill ~/.openclaw/workspace/skills/create-colleague
 ```
 
-### 依赖（可选）
+### 相依套件（選用）
 
 ```bash
 pip3 install -r requirements.txt
 ```
 
-> 飞书/钉钉自动采集需配置 App 凭证，详见 [INSTALL.md](INSTALL.md)
+> Slack 自動採集需設定 App 憑證，詳見 [INSTALL.md](INSTALL.md)
 
 ---
 
 ## 使用
 
-在 Claude Code 中输入：
+在 Claude Code 中輸入：
 
 ```
 /create-colleague
 ```
 
-按提示输入同事姓名、公司职级（如 `字节 2-1 算法工程师`）、性格标签，然后选择数据来源。所有字段均可跳过，仅凭描述也能生成。
+按提示輸入同事姓名、公司職級（如 `聯發科 資深後端工程師`）、性格標籤，然後選擇資料來源。所有欄位均可跳過，僅憑描述也能生成。
 
-完成后用 `/{slug}` 调用该同事 Skill。
+完成後用 `/{slug}` 呼叫該同事 Skill。
 
-### 管理命令
+### 管理指令
 
-| 命令 | 说明 |
+| 指令 | 說明 |
 |------|------|
 | `/list-colleagues` | 列出所有同事 Skill |
-| `/{slug}` | 调用完整 Skill（Persona + Work） |
-| `/{slug}-work` | 仅工作能力 |
-| `/{slug}-persona` | 仅人物性格 |
-| `/colleague-rollback {slug} {version}` | 回滚到历史版本 |
-| `/delete-colleague {slug}` | 删除 |
+| `/{slug}` | 呼叫完整 Skill（Persona + Work） |
+| `/{slug}-work` | 僅工作能力 |
+| `/{slug}-persona` | 僅人物性格 |
+| `/colleague-rollback {slug} {version}` | 回滾到歷史版本 |
+| `/delete-colleague {slug}` | 刪除 |
 
 ---
 
 ## 效果示例
 
-> 输入：`字节 2-1 后端工程师，INTJ，甩锅高手，字节范`
+> 輸入：`聯發科 資深後端工程師，INTJ，甩鍋高手，聯發科風`
 
-**场景一：Code Review**
-
-```
-用户      ❯ 帮我看一下这个接口设计
-
-同事.skill ❯ 等等，这个接口的 impact 是什么？背景没说清楚。
-             （看完后）N+1 查询，改掉。返回结构用统一的
-             {code, message, data}，这是规范，不用问为什么。
-```
-
-**场景二：甩锅**
+**場景一：Code Review**
 
 ```
-用户      ❯ 这个 bug 是你引入的吧
+使用者      ❯ 幫我看一下這個 API 設計
 
-同事.skill ❯ 上线时间对上了吗？那个需求改了好几个地方，还有其他变更。
+同事.skill ❯ 等等，這個介面的 impact 是什麼？背景沒講清楚。
+             （看完後）N+1 查詢，改掉。回傳結構用統一的
+             {code, message, data}，這是規範，不用問為什麼。
+```
+
+**場景二：甩鍋**
+
+```
+使用者      ❯ 這個 bug 是你引入的吧
+
+同事.skill ❯ 上線時間對得上嗎？那個需求改了好幾個地方，還有其他變更。
 ```
 
 ---
 
-## 功能特性
+## 功能特色
 
-### 生成的 Skill 结构
+### 生成的 Skill 結構
 
-每个同事 Skill 由两部分组成，共同驱动输出：
+每個同事 Skill 由兩部分組成，共同驅動輸出：
 
-| 部分 | 内容 |
+| 部分 | 內容 |
 |------|------|
-| **Part A — Work Skill** | 负责系统、技术规范、工作流程、经验知识库 |
-| **Part B — Persona** | 5 层性格结构：硬规则 → 身份 → 表达风格 → 决策模式 → 人际行为 |
+| **Part A — Work Skill** | 負責系統、技術規範、工作流程、經驗知識庫 |
+| **Part B — Persona** | 5 層性格結構：硬規則 → 身份 → 表達風格 → 決策模式 → 人際行為 |
 
-运行逻辑：`接到任务 → Persona 判断态度 → Work Skill 执行 → 用他的语气输出`
+運作邏輯：`接到任務 → Persona 判斷態度 → Work Skill 執行 → 用他的語氣輸出`
 
-### 支持的标签
+### 支援的標籤
 
-**个性**：认真负责 · 甩锅高手 · 完美主义 · 差不多就行 · 拖延症 · PUA 高手 · 职场政治玩家 · 向上管理专家 · 阴阳怪气 · 反复横跳 · 话少 · 只读不回 …
+**個性**：認真負責 · 甩鍋高手 · 完美主義 · 差不多就行 · 拖延症 · PUA 高手 · 職場政治玩家 · 向上管理專家 · 陰陽怪氣 · 反覆橫跳 · 話少 · 已讀不回 …
 
-**企业文化**：字节范 · 阿里味 · 腾讯味 · 华为味 · 百度味 · 美团味 · 第一性原理 · OKR 狂热者 · 大厂流水线 · 创业公司派
+**企業文化**：台積電風 · 聯發科風 · 趨勢科技風 · 傳產轉型風 · 外商風 · 蝦皮風 · 第一性原理 · OKR 狂熱者 · 科技業流水線 · 新創風
 
-**职级支持**：字节 2-1~3-3+ · 阿里 P5~P11 · 腾讯 T1~T4 · 百度 T5~T9 · 美团 P4~P8 · 华为 13~21 级 · 网易 · 京东 · 小米 …
+**職級支援**：
+- 台積電（工程師 → 資深 → 主任 → 副理 → 經理 → 處長）
+- 聯發科（工程師 → 資深 → 主任 → 經理 → 處長）
+- 外商 Google/Meta/Microsoft（L3~L8、SDE I~III → Senior → Staff → Principal）
+- 趨勢科技（Engineer → Senior → Staff → Principal）
+- 一般科技業（Junior → Mid → Senior → Lead → Manager → Director）
+- 傳統產業（專員 → 組長 → 主任 → 副理 → 經理 → 協理 → 副總）
 
-### 进化机制
+### 進化機制
 
-- **追加文件** → 自动分析增量 → merge 进对应部分，不覆盖已有结论
-- **对话纠正** → 说「他不会这样，他应该是 xxx」→ 写入 Correction 层，立即生效
-- **版本管理** → 每次更新自动存档，支持回滚到任意历史版本
+- **追加檔案** → 自動分析增量 → merge 進對應部分，不覆蓋已有結論
+- **對話糾正** → 說「他不會這樣，他應該是 xxx」→ 寫入 Correction 層，立即生效
+- **版本管理** → 每次更新自動存檔，支援回滾到任意歷史版本
 
 ---
 
-## 项目结构
+## 專案結構
 
-本项目遵循 [AgentSkills](https://agentskills.io) 开放标准，整个 repo 就是一个 skill 目录：
+本專案遵循 [AgentSkills](https://agentskills.io) 開放標準，整個 repo 就是一個 skill 目錄：
 
 ```
 create-colleague/
 ├── SKILL.md              # skill 入口（官方 frontmatter）
 ├── prompts/              # Prompt 模板
-│   ├── intake.md         #   对话式信息录入
+│   ├── intake.md         #   對話式資訊錄入
 │   ├── work_analyzer.md  #   工作能力提取
-│   ├── persona_analyzer.md #  性格行为提取（含标签翻译表）
+│   ├── persona_analyzer.md #  性格行為提取（含標籤翻譯表）
 │   ├── work_builder.md   #   work.md 生成模板
-│   ├── persona_builder.md #   persona.md 五层结构模板
-│   ├── merger.md         #   增量 merge 逻辑
-│   └── correction_handler.md # 对话纠正处理
+│   ├── persona_builder.md #   persona.md 五層結構模板
+│   ├── merger.md         #   增量 merge 邏輯
+│   └── correction_handler.md # 對話糾正處理
 ├── tools/                # Python 工具
-│   ├── feishu_auto_collector.py  # 飞书全自动采集
-│   ├── feishu_browser.py         # 飞书浏览器方案
-│   ├── feishu_mcp_client.py      # 飞书 MCP 方案
-│   ├── dingtalk_auto_collector.py # 钉钉全自动采集
-│   ├── slack_auto_collector.py   # Slack 全自动采集
-│   ├── email_parser.py           # 邮件解析
-│   ├── skill_writer.py           # Skill 文件管理
-│   └── version_manager.py        # 版本存档与回滚
+│   ├── slack_auto_collector.py   # Slack 全自動採集
+│   ├── email_parser.py           # 信件解析
+│   ├── skill_writer.py           # Skill 檔案管理
+│   └── version_manager.py        # 版本存檔與回滾
 ├── colleagues/           # 生成的同事 Skill（gitignored）
 ├── docs/PRD.md
 ├── requirements.txt
@@ -206,22 +208,23 @@ create-colleague/
 
 ---
 
-## 注意事项
+## 注意事項
 
-- **原材料质量决定 Skill 质量**：聊天记录 + 长文档 > 仅手动描述
-- 建议优先收集：他**主动写的**长文 > **决策类回复** > 日常消息
-- 飞书自动采集需将 App bot 加入相关群聊
-- 目前还是一个demo版本，如果有bug请多多提issue！
+- **原始素材品質決定 Skill 品質**：聊天記錄 + 長篇文件 > 僅手動描述
+- 建議優先收集：他**主動寫的**長文 > **決策類回覆** > 日常訊息
+- Slack 自動採集需將 App Bot 加入相關頻道
+- LINE / Discord / Teams 匯出為純文字檔，不需額外工具
+- 目前還是 demo 版本，如果有 bug 請多多提 issue！
 
 ---
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=titanwings%2Fcolleague-skill&type=date&legend=top-left">
+<a href="https://www.star-history.com/?repos=tboydar%2Fcolleague-skill&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=titanwings/colleague-skill&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=titanwings/colleague-skill&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=titanwings/colleague-skill&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=tboydar/colleague-skill&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=tboydar/colleague-skill&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=tboydar/colleague-skill&type=date&legend=top-left" />
  </picture>
 </a>
 
@@ -229,9 +232,6 @@ create-colleague/
 
 <div align="center">
 
-MIT License © [titanwings](https://github.com/titanwings)
-
+MIT License · 台灣在地化 fork，原始專案 © [titanwings](https://github.com/titanwings/colleague-skill)
 
 </div>
-
-

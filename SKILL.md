@@ -1,290 +1,184 @@
 ---
 name: create-colleague
-description: "Distill a colleague into an AI Skill. Auto-collect Feishu/DingTalk data, generate Work Skill + Persona, with continuous evolution. | 把同事蒸馏成 AI Skill，自动采集飞书/钉钉数据，生成 Work + Persona，支持持续进化。"
+description: "Distill a colleague into an AI Skill. Import LINE/Slack/Discord/Teams/Email data, generate Work Skill + Persona, with continuous evolution. | 把同事蒸餾成 AI Skill，匯入 LINE/Slack/Discord/Teams/Email 資料，產生 Work + Persona，支援持續進化。"
 argument-hint: "[colleague-name-or-slug]"
 version: "1.0.0"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Bash
 ---
 
-> **Language / 语言**: This skill supports both English and Chinese. Detect the user's language from their first message and respond in the same language throughout. Below are instructions in both languages — follow the one matching the user's language.
+> **Language / 語言**: This skill supports both English and Chinese. Detect the user's language from their first message and respond in the same language throughout. Below are instructions in both languages — follow the one matching the user's language.
 >
-> 本 Skill 支持中英文。根据用户第一条消息的语言，全程使用同一语言回复。下方提供了两种语言的指令，按用户语言选择对应版本执行。
+> 本 Skill 支援中英文。根據使用者第一則訊息的語言，全程使用同一語言回覆。下方提供了兩種語言的指令，按使用者語言選擇對應版本執行。
 
-# 同事.skill 创建器（Claude Code 版）
+# 同事.skill 建立器（Claude Code 版）
 
-## 触发条件
+## 觸發條件
 
-当用户说以下任意内容时启动：
+當使用者說以下任意內容時啟動：
 - `/create-colleague`
-- "帮我创建一个同事 skill"
-- "我想蒸馏一个同事"
-- "新建同事"
-- "给我做一个 XX 的 skill"
+- 「幫我建立一個同事 skill」
+- 「我想蒸餾一個同事」
+- 「新建同事」
+- 「幫我做一個 XX 的 skill」
 
-当用户对已有同事 Skill 说以下内容时，进入进化模式：
-- "我有新文件" / "追加"
-- "这不对" / "他不会这样" / "他应该是"
+當使用者對已有同事 Skill 說以下內容時，進入進化模式：
+- 「我有新檔案」/「追加」
+- 「這不對」/「他不會這樣」/「他應該是」
 - `/update-colleague {slug}`
 
-当用户说 `/list-colleagues` 时列出所有已生成的同事。
+當使用者說 `/list-colleagues` 時列出所有已產生的同事。
 
 ---
 
-## 工具使用规则
+## 工具使用規則
 
-本 Skill 运行在 Claude Code 环境，使用以下工具：
+本 Skill 運行在 Claude Code 環境，使用以下工具：
 
-| 任务 | 使用工具 |
+| 任務 | 使用工具 |
 |------|---------|
-| 读取 PDF 文档 | `Read` 工具（原生支持 PDF） |
-| 读取图片截图 | `Read` 工具（原生支持图片） |
-| 读取 MD/TXT 文件 | `Read` 工具 |
-| 解析飞书消息 JSON 导出 | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/feishu_parser.py` |
-| 飞书全自动采集（推荐） | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/feishu_auto_collector.py` |
-| 飞书文档（浏览器登录态） | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/feishu_browser.py` |
-| 飞书文档（MCP App Token） | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/feishu_mcp_client.py` |
-| 钉钉全自动采集 | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/dingtalk_auto_collector.py` |
-| 解析邮件 .eml/.mbox | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/email_parser.py` |
-| 写入/更新 Skill 文件 | `Write` / `Edit` 工具 |
+| 讀取 PDF 文件 | `Read` 工具（原生支援 PDF）|
+| 讀取圖片截圖 | `Read` 工具（原生支援圖片）|
+| 讀取 MD/TXT/LINE匯出 檔案 | `Read` 工具 |
+| Slack 自動採集 | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/slack_auto_collector.py` |
+| 解析 Email .eml/.mbox | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/email_parser.py` |
+| 寫入/更新 Skill 檔案 | `Write` / `Edit` 工具 |
 | 版本管理 | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/version_manager.py` |
 | 列出已有 Skill | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/skill_writer.py --action list` |
 
-**基础目录**：Skill 文件写入 `./colleagues/{slug}/`（相对于本项目目录）。
-如需改为全局路径，用 `--base-dir ~/.openclaw/workspace/skills/colleagues`。
+**基礎目錄**：Skill 檔案寫入 `./colleagues/{slug}/`（相對於本專案目錄）。
+如需改為全域路徑，用 `--base-dir ~/.claude/workspace/skills/colleagues`。
 
 ---
 
-## 主流程：创建新同事 Skill
+## 主流程：建立新同事 Skill
 
-### Step 1：基础信息录入（3 个问题）
+### Step 1：基礎資訊錄入（3 個問題）
 
-参考 `${CLAUDE_SKILL_DIR}/prompts/intake.md` 的问题序列，只问 3 个问题：
+參考 `${CLAUDE_SKILL_DIR}/prompts/intake.md` 的問題序列，只問 3 個問題：
 
-1. **花名/代号**（必填）
-2. **基本信息**（一句话：公司、职级、职位、性别，想到什么写什么）
-   - 示例：`字节 2-1 后端工程师 男`
-3. **性格画像**（一句话：MBTI、星座、个性标签、企业文化、印象）
-   - 示例：`INTJ 摩羯座 甩锅高手 字节范 CR很严格但从来不解释原因`
+1. **花名/代號**（必填）
+2. **基本資訊**（一句話：公司、職級、職位、性別，想到什麼寫什麼）
+   - 示例：`聯發科 資深後端工程師 男`
+3. **性格畫像**（一句話：MBTI、星座、個性標籤、企業文化、印象）
+   - 示例：`INTJ 摩羯座 甩鍋高手 聯發科風 CR很嚴格但從來不解釋原因`
 
-除姓名外均可跳过。收集完后汇总确认再进入下一步。
+除姓名外均可跳過。收集完後彙總確認再進入下一步。
 
-### Step 2：原材料导入
+### Step 2：原始素材匯入
 
-询问用户提供原材料，展示四种方式供选择：
+詢問使用者提供原始素材，展示三種方式供選擇：
 
 ```
-原材料怎么提供？
+原始素材怎麼提供？
 
-  [A] 飞书自动采集（推荐）
-      输入姓名，自动拉取消息记录 + 文档 + 多维表格
+  [A] Slack 自動採集
+      輸入姓名，自動拉取 Slack 頻道訊息記錄
 
-  [B] 钉钉自动采集
-      输入姓名，自动拉取文档 + 多维表格
-      消息记录通过浏览器采集（钉钉 API 不支持历史消息）
+  [B] 上傳檔案
+      PDF / 圖片 / LINE 對話匯出 .txt / Discord 匯出 / Teams 匯出 / Email .eml
 
-  [C] 飞书链接
-      直接给文档/Wiki 链接（浏览器登录态 或 MCP）
+  [C] 直接貼上內容
+      把文字複製進來
 
-  [D] 上传文件
-      PDF / 图片 / 导出 JSON / 邮件 .eml
-
-  [E] 直接粘贴内容
-      把文字复制进来
-
-可以混用，也可以跳过（仅凭手动信息生成）。
+可以混用，也可以跳過（僅憑手動資訊產生）。
 ```
 
 ---
 
-#### 方式 A：飞书自动采集（推荐）
+#### 方式 A：Slack 自動採集
 
-首次使用需配置：
+首次使用需設定：
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/feishu_auto_collector.py --setup
+python3 ${CLAUDE_SKILL_DIR}/tools/slack_auto_collector.py --setup
 ```
 
-配置完成后，只需输入姓名，自动完成所有采集：
+設定完成後，只需輸入姓名，自動完成所有採集：
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/feishu_auto_collector.py \
+python3 ${CLAUDE_SKILL_DIR}/tools/slack_auto_collector.py \
   --name "{name}" \
   --output-dir ./knowledge/{slug} \
-  --msg-limit 1000 \
-  --doc-limit 20
+  --msg-limit 1000
 ```
 
-自动采集内容：
-- 所有与他共同群聊中他发出的消息（过滤系统消息、表情包）
-- 他创建/编辑的飞书文档和 Wiki
-- 相关多维表格（如有权限）
+自動採集內容：
+- 所有與他共同頻道中他發出的訊息（過濾系統訊息、表情符號）
+- 相關討論串與回覆
 
-采集完成后用 `Read` 读取输出目录下的文件：
-- `knowledge/{slug}/messages.txt` → 消息记录
-- `knowledge/{slug}/docs.txt` → 文档内容
-- `knowledge/{slug}/collection_summary.json` → 采集摘要
+採集完成後用 `Read` 讀取輸出目錄下的檔案：
+- `knowledge/{slug}/messages.txt` → 訊息記錄
+- `knowledge/{slug}/collection_summary.json` → 採集摘要
 
-如果采集失败（权限不足 / bot 未加群），告知用户需要：
-1. 将飞书 App bot 添加到相关群聊
+如果採集失敗（權限不足 / bot 未加入頻道），告知使用者需要：
+1. 將 Slack App bot 加入到相關頻道
 2. 或改用方式 B/C
 
 ---
 
-#### 方式 B：钉钉自动采集
+#### 方式 B：上傳檔案
 
-首次使用需配置：
-```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/dingtalk_auto_collector.py --setup
-```
-
-然后输入姓名，一键采集：
-```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/dingtalk_auto_collector.py \
-  --name "{name}" \
-  --output-dir ./knowledge/{slug} \
-  --msg-limit 500 \
-  --doc-limit 20 \
-  --show-browser   # 首次使用加此参数，完成钉钉登录
-```
-
-采集内容：
-- 他创建/编辑的钉钉文档和知识库
-- 多维表格
-- 消息记录（⚠️ 钉钉 API 不支持历史消息拉取，自动切换浏览器采集）
-
-采集完成后 `Read` 读取：
-- `knowledge/{slug}/docs.txt`
-- `knowledge/{slug}/bitables.txt`
-- `knowledge/{slug}/messages.txt`
-
-如消息采集失败，提示用户截图聊天记录后上传。
-
----
-
-#### 方式 C：上传文件
-
-- **PDF / 图片**：`Read` 工具直接读取
-- **飞书消息 JSON 导出**：
-  ```bash
-  python3 ${CLAUDE_SKILL_DIR}/tools/feishu_parser.py --file {path} --target "{name}" --output /tmp/feishu_out.txt
-  ```
-  然后 `Read /tmp/feishu_out.txt`
-- **邮件文件 .eml / .mbox**：
+- **PDF / 圖片**：`Read` 工具直接讀取
+- **LINE 對話匯出 .txt**：`Read` 工具直接讀取
+- **Discord 匯出檔案**：`Read` 工具直接讀取
+- **Teams 匯出檔案**：`Read` 工具直接讀取
+- **Email 檔案 .eml / .mbox**：
   ```bash
   python3 ${CLAUDE_SKILL_DIR}/tools/email_parser.py --file {path} --target "{name}" --output /tmp/email_out.txt
   ```
-  然后 `Read /tmp/email_out.txt`
-- **Markdown / TXT**：`Read` 工具直接读取
+  然後 `Read /tmp/email_out.txt`
+- **Markdown / TXT**：`Read` 工具直接讀取
 
 ---
 
-#### 方式 B：飞书链接
+#### 方式 C：直接貼上
 
-用户提供飞书文档/Wiki 链接时，询问读取方式：
-
-```
-检测到飞书链接，选择读取方式：
-
-  [1] 浏览器方案（推荐）
-      复用你本机 Chrome 的登录状态
-      ✅ 内部文档、需要权限的文档都能读
-      ✅ 无需配置 token
-      ⚠️  需要本机安装 Chrome + playwright
-
-  [2] MCP 方案
-      通过飞书 App Token 调用官方 API
-      ✅ 稳定，不依赖浏览器
-      ✅ 可以读消息记录（需要群聊 ID）
-      ⚠️  需要先配置 App ID / App Secret
-      ⚠️  内部文档需要管理员给应用授权
-
-选择 [1/2]：
-```
-
-**选 1（浏览器方案）**：
-```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/feishu_browser.py \
-  --url "{feishu_url}" \
-  --target "{name}" \
-  --output /tmp/feishu_doc_out.txt
-```
-首次使用若未登录，会弹出浏览器窗口要求登录（一次性）。
-
-**选 2（MCP 方案）**：
-
-首次使用需初始化配置：
-```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/feishu_mcp_client.py --setup
-```
-
-之后直接读取：
-```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/feishu_mcp_client.py \
-  --url "{feishu_url}" \
-  --output /tmp/feishu_doc_out.txt
-```
-
-读取消息记录（需要群聊 ID，格式 `oc_xxx`）：
-```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/feishu_mcp_client.py \
-  --chat-id "oc_xxx" \
-  --target "{name}" \
-  --limit 500 \
-  --output /tmp/feishu_msg_out.txt
-```
-
-两种方式输出后均用 `Read` 读取结果文件，进入分析流程。
+使用者貼上的內容直接作為文字原始素材，無需呼叫任何工具。
 
 ---
 
-#### 方式 C：直接粘贴
+如果使用者說「沒有檔案」或「跳過」，僅憑 Step 1 的手動資訊產生 Skill。
 
-用户粘贴的内容直接作为文本原材料，无需调用任何工具。
+### Step 3：分析原始素材
 
----
+將收集到的所有原始素材和使用者填寫的基礎資訊彙總，按以下兩條線分析：
 
-如果用户说"没有文件"或"跳过"，仅凭 Step 1 的手动信息生成 Skill。
+**線路 A（Work Skill）**：
+- 參考 `${CLAUDE_SKILL_DIR}/prompts/work_analyzer.md` 中的提取維度
+- 提取：負責系統、技術規範、工作流程、輸出偏好、經驗知識
+- 根據職位類型重點提取（後端/前端/演算法/產品/設計不同側重）
 
-### Step 3：分析原材料
+**線路 B（Persona）**：
+- 參考 `${CLAUDE_SKILL_DIR}/prompts/persona_analyzer.md` 中的提取維度
+- 將使用者填寫的標籤翻譯為具體行為規則（參見標籤翻譯表）
+- 從原始素材中提取：表達風格、決策模式、人際行為
 
-将收集到的所有原材料和用户填写的基础信息汇总，按以下两条线分析：
+### Step 4：產生並預覽
 
-**线路 A（Work Skill）**：
-- 参考 `${CLAUDE_SKILL_DIR}/prompts/work_analyzer.md` 中的提取维度
-- 提取：负责系统、技术规范、工作流程、输出偏好、经验知识
-- 根据职位类型重点提取（后端/前端/算法/产品/设计不同侧重）
+參考 `${CLAUDE_SKILL_DIR}/prompts/work_builder.md` 產生 Work Skill 內容。
+參考 `${CLAUDE_SKILL_DIR}/prompts/persona_builder.md` 產生 Persona 內容（5 層結構）。
 
-**线路 B（Persona）**：
-- 参考 `${CLAUDE_SKILL_DIR}/prompts/persona_analyzer.md` 中的提取维度
-- 将用户填写的标签翻译为具体行为规则（参见标签翻译表）
-- 从原材料中提取：表达风格、决策模式、人际行为
-
-### Step 4：生成并预览
-
-参考 `${CLAUDE_SKILL_DIR}/prompts/work_builder.md` 生成 Work Skill 内容。
-参考 `${CLAUDE_SKILL_DIR}/prompts/persona_builder.md` 生成 Persona 内容（5 层结构）。
-
-向用户展示摘要（各 5-8 行），询问：
+向使用者展示摘要（各 5-8 行），詢問：
 ```
 Work Skill 摘要：
-  - 负责：{xxx}
-  - 技术栈：{xxx}
-  - CR 重点：{xxx}
+  - 負責：{xxx}
+  - 技術棧：{xxx}
+  - CR 重點：{xxx}
   ...
 
 Persona 摘要：
   - 核心性格：{xxx}
-  - 表达风格：{xxx}
-  - 决策模式：{xxx}
+  - 表達風格：{xxx}
+  - 決策模式：{xxx}
   ...
 
-确认生成？还是需要调整？
+確認產生？還是需要調整？
 ```
 
-### Step 5：写入文件
+### Step 5：寫入檔案
 
-用户确认后，执行以下写入操作：
+使用者確認後，執行以下寫入操作：
 
-**1. 创建目录结构**（用 Bash）：
+**1. 建立目錄結構**（用 Bash）：
 ```bash
 mkdir -p colleagues/{slug}/versions
 mkdir -p colleagues/{slug}/knowledge/docs
@@ -292,21 +186,21 @@ mkdir -p colleagues/{slug}/knowledge/messages
 mkdir -p colleagues/{slug}/knowledge/emails
 ```
 
-**2. 写入 work.md**（用 Write 工具）：
-路径：`colleagues/{slug}/work.md`
+**2. 寫入 work.md**（用 Write 工具）：
+路徑：`colleagues/{slug}/work.md`
 
-**3. 写入 persona.md**（用 Write 工具）：
-路径：`colleagues/{slug}/persona.md`
+**3. 寫入 persona.md**（用 Write 工具）：
+路徑：`colleagues/{slug}/persona.md`
 
-**4. 写入 meta.json**（用 Write 工具）：
-路径：`colleagues/{slug}/meta.json`
-内容：
+**4. 寫入 meta.json**（用 Write 工具）：
+路徑：`colleagues/{slug}/meta.json`
+內容：
 ```json
 {
   "name": "{name}",
   "slug": "{slug}",
-  "created_at": "{ISO时间}",
-  "updated_at": "{ISO时间}",
+  "created_at": "{ISO時間}",
+  "updated_at": "{ISO時間}",
   "version": "v1",
   "profile": {
     "company": "{company}",
@@ -320,15 +214,15 @@ mkdir -p colleagues/{slug}/knowledge/emails
     "culture": [...]
   },
   "impression": "{impression}",
-  "knowledge_sources": [...已导入文件列表],
+  "knowledge_sources": [...已匯入檔案列表],
   "corrections_count": 0
 }
 ```
 
-**5. 生成完整 SKILL.md**（用 Write 工具）：
-路径：`colleagues/{slug}/SKILL.md`
+**5. 產生完整 SKILL.md**（用 Write 工具）：
+路徑：`colleagues/{slug}/SKILL.md`
 
-SKILL.md 结构：
+SKILL.md 結構：
 ```markdown
 ---
 name: colleague-{slug}
@@ -338,74 +232,74 @@ user-invocable: true
 
 # {name}
 
-{company} {level} {role}{如有性别和MBTI则附上}
+{company} {level} {role}{如有性別和MBTI則附上}
 
 ---
 
 ## PART A：工作能力
 
-{work.md 全部内容}
+{work.md 全部內容}
 
 ---
 
 ## PART B：人物性格
 
-{persona.md 全部内容}
+{persona.md 全部內容}
 
 ---
 
-## 运行规则
+## 運行規則
 
-1. 先由 PART B 判断：用什么态度接这个任务？
-2. 再由 PART A 执行：用你的技术能力完成任务
-3. 输出时始终保持 PART B 的表达风格
-4. PART B Layer 0 的规则优先级最高，任何情况下不得违背
+1. 先由 PART B 判斷：用什麼態度接這個任務？
+2. 再由 PART A 執行：用你的技術能力完成任務
+3. 輸出時始終保持 PART B 的表達風格
+4. PART B Layer 0 的規則優先順序最高，任何情況下不得違背
 ```
 
-告知用户：
+告知使用者：
 ```
-✅ 同事 Skill 已创建！
+✅ 同事 Skill 已建立！
 
-文件位置：colleagues/{slug}/
-触发词：/{slug}（完整版）
-        /{slug}-work（仅工作能力）
-        /{slug}-persona（仅人物性格）
+檔案位置：colleagues/{slug}/
+觸發詞：/{slug}（完整版）
+        /{slug}-work（僅工作能力）
+        /{slug}-persona（僅人物性格）
 
-如果用起来感觉哪里不对，直接说"他不会这样"，我来更新。
+如果用起來感覺哪裡不對，直接說「他不會這樣」，我來更新。
 ```
 
 ---
 
-## 进化模式：追加文件
+## 進化模式：追加檔案
 
-用户提供新文件或文本时：
+使用者提供新檔案或文字時：
 
-1. 按 Step 2 的方式读取新内容
-2. 用 `Read` 读取现有 `colleagues/{slug}/work.md` 和 `persona.md`
-3. 参考 `${CLAUDE_SKILL_DIR}/prompts/merger.md` 分析增量内容
-4. 存档当前版本（用 Bash）：
+1. 按 Step 2 的方式讀取新內容
+2. 用 `Read` 讀取現有 `colleagues/{slug}/work.md` 和 `persona.md`
+3. 參考 `${CLAUDE_SKILL_DIR}/prompts/merger.md` 分析增量內容
+4. 存檔當前版本（用 Bash）：
    ```bash
    python3 ${CLAUDE_SKILL_DIR}/tools/version_manager.py --action backup --slug {slug} --base-dir ./colleagues
    ```
-5. 用 `Edit` 工具追加增量内容到对应文件
-6. 重新生成 `SKILL.md`（合并最新 work.md + persona.md）
+5. 用 `Edit` 工具追加增量內容到對應檔案
+6. 重新產生 `SKILL.md`（合併最新 work.md + persona.md）
 7. 更新 `meta.json` 的 version 和 updated_at
 
 ---
 
-## 进化模式：对话纠正
+## 進化模式：對話糾正
 
-用户表达"不对"/"应该是"时：
+使用者表達「不對」/「應該是」時：
 
-1. 参考 `${CLAUDE_SKILL_DIR}/prompts/correction_handler.md` 识别纠正内容
-2. 判断属于 Work（技术/流程）还是 Persona（性格/沟通）
-3. 生成 correction 记录
-4. 用 `Edit` 工具追加到对应文件的 `## Correction 记录` 节
-5. 重新生成 `SKILL.md`
+1. 參考 `${CLAUDE_SKILL_DIR}/prompts/correction_handler.md` 識別糾正內容
+2. 判斷屬於 Work（技術/流程）還是 Persona（性格/溝通）
+3. 產生 correction 記錄
+4. 用 `Edit` 工具追加到對應檔案的 `## Correction 記錄` 節
+5. 重新產生 `SKILL.md`
 
 ---
 
-## 管理命令
+## 管理指令
 
 `/list-colleagues`：
 ```bash
@@ -418,7 +312,7 @@ python3 ${CLAUDE_SKILL_DIR}/tools/version_manager.py --action rollback --slug {s
 ```
 
 `/delete-colleague {slug}`：
-确认后执行：
+確認後執行：
 ```bash
 rm -rf colleagues/{slug}
 ```
@@ -456,19 +350,15 @@ This Skill runs in the Claude Code environment with the following tools:
 |------|------|
 | Read PDF documents | `Read` tool (native PDF support) |
 | Read image screenshots | `Read` tool (native image support) |
-| Read MD/TXT files | `Read` tool |
-| Parse Feishu message JSON export | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/feishu_parser.py` |
-| Feishu auto-collect (recommended) | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/feishu_auto_collector.py` |
-| Feishu docs (browser session) | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/feishu_browser.py` |
-| Feishu docs (MCP App Token) | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/feishu_mcp_client.py` |
-| DingTalk auto-collect | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/dingtalk_auto_collector.py` |
+| Read MD/TXT/LINE export files | `Read` tool |
+| Slack auto-collect | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/slack_auto_collector.py` |
 | Parse email .eml/.mbox | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/email_parser.py` |
 | Write/update Skill files | `Write` / `Edit` tool |
 | Version management | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/version_manager.py` |
 | List existing Skills | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/skill_writer.py --action list` |
 
 **Base directory**: Skill files are written to `./colleagues/{slug}/` (relative to the project directory).
-For a global path, use `--base-dir ~/.openclaw/workspace/skills/colleagues`.
+For a global path, use `--base-dir ~/.claude/workspace/skills/colleagues`.
 
 ---
 
@@ -480,9 +370,9 @@ Refer to `${CLAUDE_SKILL_DIR}/prompts/intake.md` for the question sequence. Only
 
 1. **Alias / Codename** (required)
 2. **Basic info** (one sentence: company, level, role, gender — say whatever comes to mind)
-   - Example: `ByteDance L2-1 backend engineer male`
+   - Example: `MediaTek Senior backend engineer male`
 3. **Personality profile** (one sentence: MBTI, zodiac, traits, corporate culture, impressions)
-   - Example: `INTJ Capricorn blame-shifter ByteDance-style strict in CR but never explains why`
+   - Example: `INTJ Capricorn blame-shifter MediaTek-style strict in CR but never explains why`
 
 Everything except the alias can be skipped. Summarize and confirm before moving to the next step.
 
@@ -493,20 +383,13 @@ Ask the user how they'd like to provide materials:
 ```
 How would you like to provide source materials?
 
-  [A] Feishu Auto-Collect (recommended)
-      Enter name, auto-pull messages + docs + spreadsheets
+  [A] Slack Auto-Collect
+      Enter name, auto-pull Slack channel message history
 
-  [B] DingTalk Auto-Collect
-      Enter name, auto-pull docs + spreadsheets
-      Messages collected via browser (DingTalk API doesn't support message history)
+  [B] Upload Files
+      PDF / images / LINE chat export .txt / Discord export / Teams export / Email .eml
 
-  [C] Feishu Link
-      Provide doc/Wiki link (browser session or MCP)
-
-  [D] Upload Files
-      PDF / images / exported JSON / email .eml
-
-  [E] Paste Text
+  [C] Paste Text
       Copy-paste text directly
 
 Can mix and match, or skip entirely (generate from manual info only).
@@ -514,77 +397,41 @@ Can mix and match, or skip entirely (generate from manual info only).
 
 ---
 
-#### Option A: Feishu Auto-Collect (Recommended)
+#### Option A: Slack Auto-Collect
 
 First-time setup:
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/feishu_auto_collector.py --setup
+python3 ${CLAUDE_SKILL_DIR}/tools/slack_auto_collector.py --setup
 ```
 
 After setup, just enter the name:
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/feishu_auto_collector.py \
+python3 ${CLAUDE_SKILL_DIR}/tools/slack_auto_collector.py \
   --name "{name}" \
   --output-dir ./knowledge/{slug} \
-  --msg-limit 1000 \
-  --doc-limit 20
+  --msg-limit 1000
 ```
 
 Auto-collected content:
-- All messages sent by them in shared group chats (system messages and stickers filtered)
-- Feishu docs and Wikis they created/edited
-- Related spreadsheets (if accessible)
+- All messages sent by them in shared channels (system messages and emoji filtered)
+- Related threads and replies
 
 After collection, `Read` the output files:
 - `knowledge/{slug}/messages.txt` → messages
-- `knowledge/{slug}/docs.txt` → document content
 - `knowledge/{slug}/collection_summary.json` → collection summary
 
-If collection fails (insufficient permissions / bot not in chat), inform user to:
-1. Add the Feishu App bot to relevant group chats
+If collection fails (insufficient permissions / bot not in channel), inform user to:
+1. Add the Slack App bot to relevant channels
 2. Or switch to Option B/C
 
 ---
 
-#### Option B: DingTalk Auto-Collect
-
-First-time setup:
-```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/dingtalk_auto_collector.py --setup
-```
-
-Then enter the name:
-```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/dingtalk_auto_collector.py \
-  --name "{name}" \
-  --output-dir ./knowledge/{slug} \
-  --msg-limit 500 \
-  --doc-limit 20 \
-  --show-browser   # add this flag on first use to complete DingTalk login
-```
-
-Collected content:
-- DingTalk docs and knowledge bases they created/edited
-- Spreadsheets
-- Messages (⚠️ DingTalk API doesn't support message history — auto-switches to browser scraping)
-
-After collection, `Read`:
-- `knowledge/{slug}/docs.txt`
-- `knowledge/{slug}/bitables.txt`
-- `knowledge/{slug}/messages.txt`
-
-If message collection fails, prompt user to upload chat screenshots.
-
----
-
-#### Option C: Upload Files
+#### Option B: Upload Files
 
 - **PDF / Images**: `Read` tool directly
-- **Feishu message JSON export**:
-  ```bash
-  python3 ${CLAUDE_SKILL_DIR}/tools/feishu_parser.py --file {path} --target "{name}" --output /tmp/feishu_out.txt
-  ```
-  Then `Read /tmp/feishu_out.txt`
+- **LINE chat export .txt**: `Read` tool directly
+- **Discord export files**: `Read` tool directly
+- **Teams export files**: `Read` tool directly
 - **Email files .eml / .mbox**:
   ```bash
   python3 ${CLAUDE_SKILL_DIR}/tools/email_parser.py --file {path} --target "{name}" --output /tmp/email_out.txt
@@ -594,66 +441,7 @@ If message collection fails, prompt user to upload chat screenshots.
 
 ---
 
-#### Option D: Feishu Link
-
-When the user provides a Feishu doc/Wiki link, ask which method to use:
-
-```
-Feishu link detected. Choose read method:
-
-  [1] Browser Method (recommended)
-      Reuses your local Chrome login session
-      ✅ Works with internal docs requiring permissions
-      ✅ No token configuration needed
-      ⚠️  Requires Chrome + playwright installed locally
-
-  [2] MCP Method
-      Uses Feishu App Token via official API
-      ✅ Stable, no browser dependency
-      ✅ Can read messages (needs chat ID)
-      ⚠️  Requires App ID / App Secret setup
-      ⚠️  Internal docs need admin authorization for the app
-
-Choose [1/2]:
-```
-
-**Option 1 (Browser)**:
-```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/feishu_browser.py \
-  --url "{feishu_url}" \
-  --target "{name}" \
-  --output /tmp/feishu_doc_out.txt
-```
-First use will open a browser window for login (one-time).
-
-**Option 2 (MCP)**:
-
-First-time setup:
-```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/feishu_mcp_client.py --setup
-```
-
-Then read directly:
-```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/feishu_mcp_client.py \
-  --url "{feishu_url}" \
-  --output /tmp/feishu_doc_out.txt
-```
-
-Read messages (needs chat ID, format `oc_xxx`):
-```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/feishu_mcp_client.py \
-  --chat-id "oc_xxx" \
-  --target "{name}" \
-  --limit 500 \
-  --output /tmp/feishu_msg_out.txt
-```
-
-Both methods output to files, then use `Read` to load results into analysis.
-
----
-
-#### Option E: Paste Text
+#### Option C: Paste Text
 
 User-pasted content is used directly as text material. No tools needed.
 
